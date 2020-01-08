@@ -8,6 +8,7 @@ import hmac
 import datetime
 import requests
 
+from .core_exceptions import *
 from . import core
 
 #v2
@@ -108,11 +109,11 @@ def thinq2_get(url, access_token=None, user_number=None, headers={}):
         code = out['resultCode']
         if code != '0000':
             if code == "0102":
-                raise core.NotLoggedInError()
+                raise NotLoggedInError()
             elif code == "0106":
-                raise core.NotConnectedError()
+                raise NotConnectedError()
             else:
-                raise core.APIError(code, "error")
+                raise APIError(code, "error")
     
     return out['result']
 
@@ -153,7 +154,7 @@ def auth_request(oauth_url, data):
     res = requests.post(url, headers=headers, data=data)
 
     if res.status_code != 200:
-        raise core.TokenError()
+        raise TokenError()
 
     return res.json()
 

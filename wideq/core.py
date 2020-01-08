@@ -8,6 +8,8 @@ import hmac
 import datetime
 import requests
 
+from .core_exceptions import *
+
 GATEWAY_URL = 'https://kic.lgthinq.com:46030/api/common/gatewayUriList'
 APP_KEY = 'wideq'
 SECURITY_KEY = 'nuts_securitykey'
@@ -54,46 +56,6 @@ def get_list(obj, key):
         return val
     else:
         return [val]
-
-
-class APIError(Exception):
-    """An error reported by the API."""
-
-    def __init__(self, code, message):
-        self.code = code
-        self.message = message
-
-
-class NotLoggedInError(APIError):
-    """The session is not valid or expired."""
-
-    def __init__(self):
-        pass
-
-
-class NotConnectedError(APIError):
-    """The service can't contact the specified device."""
-
-    def __init__(self):
-        pass
-
-
-class TokenError(APIError):
-    """An authentication token was rejected."""
-
-    def __init__(self):
-        pass
-
-
-class MonitorError(APIError):
-    """Monitoring a device failed, possibly because the monitoring
-    session failed and needs to be restarted.
-    """
-
-    def __init__(self, device_id, code):
-        self.device_id = device_id
-        self.code = code
-
 
 def lgedm_post(url, data=None, access_token=None, session_id=None):
     """Make an HTTP request in the format used by the API servers.
