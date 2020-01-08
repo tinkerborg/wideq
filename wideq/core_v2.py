@@ -251,7 +251,7 @@ class Auth(object):
 
         new_access_token = refresh_auth(self.oauth_url,
                                         self.refresh_token)
-        return Auth(self.gateway, self.oauth_url, new_access_token, self.refresh_token)
+        return Auth(self.gateway, self.oauth_url, new_access_token, self.refresh_token, self.user_number)
 
     def dump(self):
         return {
