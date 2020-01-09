@@ -12,7 +12,6 @@ from .core_exceptions import *
 from . import core
 
 #v2
-V2_API_ROOT = 'https://aic-service.lgthinq.com:46030/v1'
 V2_API_KEY = 'VGhpblEyLjAgU0VSVklDRQ=='
 V2_CLIENT_ID = '65260af7e8e6547b51fdccf930097c51eb9885a508d3fddfa9ee6cdec22ae1bd'
 V2_MESSAGE_ID = 'wideq'
@@ -278,11 +277,11 @@ class Session(object):
         return lgedm_post(url, data, self.auth.access_token, self.session_id)
 
     def post2(self, path, data=None):
-        url = urljoin(V2_API_ROOT + '/', path)
+        url = urljoin(self.auth.gateway.api_root + '/', path)
         return lgedm_post(url, data, self.auth.access_token, self.session_id)
 
     def get2(self, path):
-        url = urljoin(V2_API_ROOT + '/', path)
+        url = urljoin(self.auth.gateway.api_root + '/', path)
         return thinq2_get(url, self.auth.access_token, self.auth.user_number, country=self.auth.gateway.country, language=self.auth.gateway.language)
 
     def get_devices(self):
