@@ -23,7 +23,7 @@ V2_APP_TYPE = 'NUTS'
 V2_APP_VER = '3.0.1700'
 V2_DATA_ROOT = 'result'
 
-# new 
+# new
 V2_GATEWAY_URL = 'https://route.lgthinq.com:46030/v1/service/application/gateway-uri'
 OAUTH_REDIRECT_URI = 'https://kr.m.lgaccount.com/login/iabClose'
 
@@ -71,15 +71,15 @@ def get_list(obj, key):
         return [val]
 
 
-def thinq2_headers(extra_headers={}, access_token=None, user_number=None):
+def thinq2_headers(extra_headers={}, access_token=None, user_number=None, country="US", language="en-US"):
     
     headers = {
         'Accept': 'application/json',
         'Content-type': 'application/json;charset=UTF-8',
         'x-api-key': V2_API_KEY,
         'x-client-id': V2_CLIENT_ID,
-        'x-country-code': 'US',
-        'x-language-code': 'en-US',
+        'x-country-code': country,
+        'x-language-code': language,
         'x-message-id': V2_MESSAGE_ID,
         'x-service-code': SVC_CODE,
         'x-service-phase': V2_SVC_PHASE,
@@ -98,10 +98,10 @@ def thinq2_headers(extra_headers={}, access_token=None, user_number=None):
 
     return { **headers, **extra_headers }
 
-def thinq2_get(url, access_token=None, user_number=None, headers={}):
+def thinq2_get(url, access_token=None, user_number=None, headers={}, country="US", language="en-US"):
     
     res = requests.get(url, headers=thinq2_headers(
-        access_token=access_token, user_number=user_number, extra_headers=headers))
+        access_token=access_token, user_number=user_number, extra_headers=headers, country=country, language=language))
 
     out = res.json()
 
@@ -120,10 +120,7 @@ def thinq2_get(url, access_token=None, user_number=None, headers={}):
 def gateway_info(country, language):
     """ TODO
     """ 
-    return thinq2_get(
-        V2_GATEWAY_URL,
-        headers={ 'x-country-code': country, 'x-language-code': language }
-    )
+    return thinq2_get(V2_GATEWAY_URL, country=country, language=language)
     
 def parse_oauth_callback(url):
     """Parse the URL to which an OAuth login redirected to obtain two
@@ -286,7 +283,7 @@ class Session(object):
 
     def get2(self, path):
         url = urljoin(V2_API_ROOT + '/', path)
-        return thinq2_get(url, self.auth.access_token, self.auth.user_number)
+        return thinq2_get(url, self.auth.access_token, self.auth.user_number, country=self.auth.gateway.country, language=self.auth.gateway.language)
 
     def get_devices(self):
         """Get a list of devices associated with the user's account.
