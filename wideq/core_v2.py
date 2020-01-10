@@ -70,8 +70,8 @@ def get_list(obj, key):
         return [val]
 
 
-def thinq2_headers(extra_headers={}, access_token=None, user_number=None, country="US", language="en-US"):
-    
+def thinq2_headers(country, language, extra_headers={}, access_token=None, user_number=None):
+
     headers = {
         'Accept': 'application/json',
         'Content-type': 'application/json;charset=UTF-8',
@@ -91,14 +91,14 @@ def thinq2_headers(extra_headers={}, access_token=None, user_number=None, countr
 
     if access_token:
         headers['x-emp-token'] = access_token
-   
+
     if user_number:
         headers['x-user-no'] = user_number
 
     return { **headers, **extra_headers }
 
-def thinq2_get(url, access_token=None, user_number=None, headers={}, country="US", language="en-US"):
-    
+def thinq2_get(url, country, language, access_token=None, user_number=None, headers={}):
+
     res = requests.get(url, headers=thinq2_headers(
         access_token=access_token, user_number=user_number, extra_headers=headers, country=country, language=language))
 
@@ -282,7 +282,8 @@ class Session(object):
 
     def get2(self, path):
         url = urljoin(self.auth.gateway.api_root + '/', path)
-        return thinq2_get(url, self.auth.access_token, self.auth.user_number, country=self.auth.gateway.country, language=self.auth.gateway.language)
+        return thinq2_get(url, country=self.auth.gateway.country, language=self.auth.gateway.language,
+            access_token=self.auth.access_token, user_number=self.auth.user_number)
 
     def get_devices(self):
         """Get a list of devices associated with the user's account.
