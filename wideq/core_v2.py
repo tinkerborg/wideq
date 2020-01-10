@@ -113,14 +113,14 @@ def thinq2_get(url, access_token=None, user_number=None, headers={}, country="US
                 raise NotConnectedError()
             else:
                 raise APIError(code, "error")
-    
+
     return out['result']
 
 def gateway_info(country, language):
     """ TODO
-    """ 
+    """
     return thinq2_get(V2_GATEWAY_URL, country=country, language=language)
-    
+
 def parse_oauth_callback(url):
     """Parse the URL to which an OAuth login redirected to obtain two
     tokens: an access token for API credentials, and a refresh token for
@@ -131,7 +131,7 @@ def parse_oauth_callback(url):
     return params['oauth2_backend_url'][0], params['code'][0], params['user_number'][0]
 
 def auth_request(oauth_url, data):
-    """Use an auth code to log into the v2 API and obtain an access token 
+    """Use an auth code to log into the v2 API and obtain an access token
     and refresh token.
     """
     auth_path = '/oauth/1.0/oauth2/token'
@@ -156,7 +156,7 @@ def auth_request(oauth_url, data):
 
 def login(oauth_url, auth_code):
     """Get a new access_token using an authorization_code
-    
+
     May raise a `tokenError`.
     """
 
@@ -165,7 +165,7 @@ def login(oauth_url, auth_code):
         'grant_type': 'authorization_code',
         'redirect_uri': OAUTH_REDIRECT_URI
     })
-    
+
     return out['access_token'], out['refresh_token']
 
 def refresh_auth(oauth_root, refresh_token):
@@ -186,7 +186,7 @@ class Gateway(core.Gateway):
         gw = gateway_info(country, language)
         return cls(gw['empUri'], gw['thinq2Uri'], gw['empUri'],
                    country, language)
-    
+
     def oauth_url(self):
         """Construct the URL for users to log in (in a browser) to start an
         authenticated session.
