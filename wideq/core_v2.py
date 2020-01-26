@@ -25,6 +25,8 @@ V2_DATA_ROOT = 'result'
 # new
 V2_GATEWAY_URL = 'https://route.lgthinq.com:46030/v1/service/application/gateway-uri'
 OAUTH_REDIRECT_URI = 'https://kr.m.lgaccount.com/login/iabClose'
+V2_AIC_ROOT = 'https://aic.lgthinq.com:46030/api'
+LGEDM_DATA_ROOT = 'lgedmRoot'
 
 # orig
 SECURITY_KEY = 'nuts_securitykey'
@@ -115,6 +117,35 @@ def thinq2_get(url, access_token=None, user_number=None, headers={}, country="US
                 raise APIError(code, "error")
     
     return out['result']
+
+def thinq2_lgedm_post(url, data=None, access_token=None, user_number=None, headers={}, country="US", language="en-US"):
+    headers = thinq2_headers(
+        access_token=access_token,
+        user_number=user_number,
+        extra_headers=headers,
+        country=country,
+        language=language)
+
+    res = requests.post(
+        url,
+        json={LGEDM_DATA_ROOT: data},
+        headers=headers)
+
+    out = res.json()[LGEDM_DATA_ROOT]
+
+    # Check for API errors.
+    if 'returnCd' in out:
+        code = out['returnCd']
+        if code != '0000':
+            message = out['returnMsg']
+            if code == "0102":
+                raise NotLoggedInError()
+            if code == "0106":
+                raise NotConnectedError()
+            raise APIError(code, message)
+
+    return out
+
 
 def gateway_info(country, language):
     """ TODO
@@ -267,18 +298,8 @@ class Session(object):
         self.session_id = session_id
 
     def post(self, path, data=None):
-        """Make a POST request to the API server.
-
-        This is like `lgedm_post`, but it pulls the context for the
-        request from an active Session.
-        """
-
-        url = urljoin(self.auth.gateway.api_root + '/', path)
-        return lgedm_post(url, data, self.auth.access_token, self.session_id)
-
-    def post2(self, path, data=None):
-        url = urljoin(self.auth.gateway.api_root + '/', path)
-        return lgedm_post(url, data, self.auth.access_token, self.session_id)
+        url = urljoin(V2_AIC_ROOT + '/', path)
+        return thinq2_lgedm_post(url, data, self.auth.access_token, self.auth.user_number, country=self.auth.gateway.country, language=self.auth.gateway.language)
 
     def get2(self, path):
         url = urljoin(self.auth.gateway.api_root + '/', path)
