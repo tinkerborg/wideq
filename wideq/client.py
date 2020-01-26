@@ -297,6 +297,7 @@ RangeValue = namedtuple('RangeValue', ['min', 'max', 'step'])
 #: This is a value that is a reference to another key in the data that is at
 #: the same level as the `Value` key.
 ReferenceValue = namedtuple('ReferenceValue', ['reference'])
+StringValue = namedtuple('StringValue', ['comment'])
 
 
 class ModelInfo(object):
@@ -312,11 +313,14 @@ class ModelInfo(object):
         :param name: The name to look up.
         :returns: One of (`BitValue`, `EnumValue`, `RangeValue`,
             `ReferenceValue`).
+            `ReferenceValue`, `StringValue`).
         :raises ValueError: If an unsupported type is encountered.
         """
         d = self.data['Value'][name]
         if d['type'] in ('Enum', 'enum'):
             return EnumValue(d['option'])
+        elif d['type'] == 'String':
+            return StringValue(comment=d['_comment'])
         elif d['type'] == 'Range':
             return RangeValue(
                 d['option']['min'], d['option']['max'],
