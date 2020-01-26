@@ -60,6 +60,9 @@ def mon(client, device_id):
                                 print('- {0}: {1} ({2.min}-{2.max})'.format(
                                     key, value, desc,
                                 ))
+                            elif isinstance(desc, wideq.StringValue):
+                                print('- {}: {}'.format(key, value))
+
 
         except KeyboardInterrupt:
             pass
