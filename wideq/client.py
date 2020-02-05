@@ -111,10 +111,8 @@ class Client(object):
 
     @property
     def session(self):
-        #print("STATR WITH AUTH %s" % self.auth)
         if not self._session:
             self._session, self._devices = self.auth.start_session()
-        #print("SES %s" % self._session)
         return self._session
 
     @property
@@ -152,12 +150,16 @@ class Client(object):
                 data.get('language', DEFAULT_LANGUAGE),
             )
 
+        # XXX - support legacy
         if 'auth' in state:
             data = state['auth']
             client._auth = core.Auth.load(client._gateway, data)
 
+        # XXX - support legacy, state should be versioned
+        #if 'session' in state:
+        #    client._session = core.Session(client.auth, state['session'])
         if 'session' in state:
-            client._session = core.Session(client.auth, state['session'])
+            client._session = core.Session.load(client.auth, state['session'])
 
         if 'model_info' in state:
             client._model_info = state['model_info']
@@ -184,7 +186,9 @@ class Client(object):
             out['auth'] = self._auth.dump()
 
         if self._session:
-            out['session'] = self._session.session_id
+            # XXX - old version
+            # out['session'] = self._session.session_id
+            out['session'] = self._session.dump()
 
         out['country'] = self._country
         out['language'] = self._language

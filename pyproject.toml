@@ -8,7 +8,8 @@ author = "Adrian Sampson"
 author-email = "adrian@radbox.org"
 home-page = "https://github.com/sampsyo/wideq"
 requires = [
-    "requests"
+    "requests",
+    "paho-mqtt"
 ]
 description-file = "README.md"
 requires-python = ">=3.5"
